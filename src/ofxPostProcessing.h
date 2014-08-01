@@ -55,6 +55,7 @@
 #include "GodRaysPass.h"
 #include "RimHighlightingPass.h"
 #include "LimbDarkeningPass.h"
+#include "CustomWarp.h"
 
 typedef itg::PostProcessing ofxPostProcessing;
 

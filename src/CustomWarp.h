@@ -1,7 +1,7 @@
 /*
- *  RenderPass.h
+ *  NoiseWarpPass.h
  *
- *  Copyright (c) 2012, Neil Mendoza, http://www.neilmendoza.com
+ *  Copyright (c) 2013, Neil Mendoza, http://www.neilmendoza.com
  *  All rights reserved. 
  *  
  *  Redistribution and use in source and binary forms, with or without 
@@ -31,66 +31,40 @@
  */
 #pragma once
 
-//#define _ITG_TWEAKABLE
-
-#include "ofFbo.h"
-#include "ofVec3f.h"
-#include "ofShader.h"
-#ifdef _ITG_TWEAKABLE
-    #include "Tweakable.h"
-#endif
+#include "RenderPass.h"
 #include "ofxTSPSReceiver.h"
-
-#define STRINGIFY(A) #A
 
 namespace itg
 {
-    using namespace tr1;
-    
-    class RenderPass
-#ifdef _ITG_TWEAKABLE
-        : public Tweakable
-#endif
+    class CustomWarp : public RenderPass
     {
     public:
-        typedef shared_ptr<RenderPass> Ptr;
+        typedef shared_ptr<CustomWarp> Ptr;
         
-        RenderPass(const ofVec2f& aspect, bool arb, const string& name);
+        CustomWarp(const ofVec2f& aspect, bool arb, float frequency = 4.f, float amplitude = .1f, float speed = 10.0f);
         
-        virtual void render(ofFbo& readFbo, ofFbo& writeFbo, ofTexture& depth);
-        virtual void render(ofFbo& readFbo, ofFbo& writeFbo) {}
+        void render(ofFbo& readFbo, ofFbo& writeFbo, ofTexture& depth);
         
-        void setEnabled(bool enabled) { this->enabled = enabled; }
-        bool getEnabled() const { return enabled; }
+        float getFrequency() const { return frequency; }
+        void setFrequency(float frequency) { this->frequency = frequency; }
         
-        void enable() { enabled = true; }
-        void disable() { enabled = false; }
+        float getAmplitude() const { return amplitude; }
+        void setAmplitude(float amplitude) { this->amplitude = amplitude; }
         
-        // for GUI
-        bool& getEnabledRef() { return enabled; }
+        float getSpeed() const { return speed; }
+        void setSpeed(float speed) { this->speed = speed; }
         
-        void setAspect(const ofVec2f& aspect){ this->aspect = aspect; }
+        vector<ofxTSPS::Person*> getPeople(){return m_People;}
+        void setPeople(vector<ofxTSPS::Person*> people){m_People = people;}
         
-        void setArb(bool arb) { this->arb = arb; }
+        //template<typename T> void setParameter(T s);
         
-        virtual bool hasArbShader() { return false; }
-        virtual void setPeople(vector<ofxTSPS::Person*> people) {}
-
-#ifndef _ITG_TWEAKABLE
-        string getName() const { return name; }
-#endif
-
-    protected:
-        void texturedQuad(float x, float y, float width, float height, float s = 1.0, float t = 1.0);
-        
-        ofVec2f aspect;
-        
-        bool arb;
-    
     private:
-#ifndef _ITG_TWEAKABLE
-        string name;
-#endif
-        bool enabled;
+        ofShader shader;
+        float frequency;
+        float amplitude;
+        float speed;
+        vector<ofxTSPS::Person*> m_People;
     };
+    
 }
